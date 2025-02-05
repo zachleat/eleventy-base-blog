@@ -17,12 +17,14 @@ jobs:
     concurrency:
       group: ${{ github.workflow }}-${{ github.ref }}
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - name: Setup Node
         uses: actions/setup-node@v3
         with:
-          node-version: '18'
+          node-version: '22'
 
       - name: Cache npm
         uses: actions/cache@v3
@@ -36,12 +38,13 @@ jobs:
           path: ./.cache
           key: ${{ runner.os }}-eleventy-fetch-cache
 
-
       - run: npm install
       - run: npm run build-ghpages
 
+      # Jekyll already disabled, you can delete the .nojekyll file
+      # https://github.com/peaceiris/actions-gh-pages?tab=readme-ov-file#%EF%B8%8F-enable-built-in-jekyll-enable_jekyll
       - name: Deploy
-        uses: peaceiris/actions-gh-pages@v3
+        uses: peaceiris/actions-gh-pages@v4
         if: github.ref == 'refs/heads/main'
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
